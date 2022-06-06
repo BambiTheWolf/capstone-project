@@ -1,10 +1,10 @@
 import "./FavList.css";
 import FavGame from "./FavGame";
 import logo from "../../imgs/logo-fav.svg";
-import { useState } from "react";
+import { useSelector } from "react-redux";
 
-const FavList = ({ removeNotif, removeFav, favGames }) => {
-  const [favorite] = useState(favGames);
+const FavList = () => {
+  const state = useSelector((state) => state);
 
   return (
     <>
@@ -20,15 +20,10 @@ const FavList = ({ removeNotif, removeFav, favGames }) => {
             </div>
           </div>
           <div className="banner-elem ">
-            {favorite.length > 0 ? (
+            {state.favorites.length > 0 ? (
               <div className="fav-list">
-                {favorite.map((game) => (
-                  <FavGame
-                    key={game.id}
-                    removeFav={removeFav}
-                    removeNotif={removeNotif}
-                    {...game}
-                  />
+                {state.favorites.map((game) => (
+                  <FavGame key={game.id} {...game} />
                 ))}
               </div>
             ) : (

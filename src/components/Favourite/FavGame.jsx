@@ -1,20 +1,13 @@
 import { Link } from "react-router-dom";
 import { MdClose } from "react-icons/md";
-import { GoIssueClosed } from "react-icons/go";
+import { useDispatch } from "react-redux";
+import { removeFromFav } from "../../store/actions";
 
-const FavGame = ({
-  id,
-  title,
-  price,
-  game,
-  newPrice,
-  change,
-  removeFav,
-  removeNotif,
-}) => {
-  const thumb = game.info.thumb;
+const FavGame = ({ game }) => {
+  const dispatch = useDispatch();
+
   const saving = Math.round(
-    100 - 100 * (parseFloat(newPrice) / parseFloat(price))
+    100 - 100 * (parseFloat(game.newPrice) / parseFloat(game.price))
   );
 
   return (
@@ -22,17 +15,17 @@ const FavGame = ({
       <Link
         className="fav-card"
         to={{
-          pathname: `/game/${id}`,
+          pathname: `/game/${game.id}`,
         }}
         state={{ game: game }}
       >
         <span
           className="fav-thumb"
-          style={{ backgroundImage: `url(${thumb})` }}
+          style={{ backgroundImage: `url(${game.info.thumb})` }}
         ></span>
         <div className="game-info-container">
           <div className="game-info">
-            <p>{title}</p>
+            <p>{game.title}</p>
           </div>
           <div className="game-price-card">
             <div className="game-savings">
@@ -41,16 +34,14 @@ const FavGame = ({
           </div>
         </div>
       </Link>
-
-      {change ? (
-        <div className="seen-btn" onClick={() => removeNotif(id)}>
-          <GoIssueClosed />
-        </div>
-      ) : (
-        <div className="remove-btn" onClick={() => removeFav(id, title)}>
-          <MdClose />
-        </div>
-      )}
+      <div
+        className="remove-btn"
+        onClick={() => {
+          dispatch(removeFromFav(game));
+        }}
+      >
+        <MdClose />
+      </div>
     </div>
   );
 };

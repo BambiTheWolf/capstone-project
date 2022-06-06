@@ -1,11 +1,12 @@
 import "./App.css";
 import "react-notifications-component/dist/theme.css";
 
-import { useState, useEffect } from "react";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { setStorage, getStorage, checkChanges } from "./utils/storage";
-import { addNotif, removedNotif, alreadyNotif } from "./utils/notifications";
 import { ReactNotifications } from "react-notifications-component";
+
+import { configureStore, persistor } from "./store";
 
 import Home from "./components/Home";
 import GameList from "./components/GamesList";
@@ -16,121 +17,26 @@ import FavList from "./components/Favourite/FavList";
 import Login from "./components/Profile/Login";
 import Signup from "./components/Profile/SignUp";
 
-const App = () => {
-  const [favGames, setFavGames] = useState([]);
-  const [asChange, setAsChange] = useState(false);
-
-  useEffect(() => {
-    mountFunction();
-  }, []);
-
-  useEffect(() => {
-    setStorage(favGames);
-  });
-
-  const mountFunction = async () => {
-    const storedFavGames = getStorage();
-    const checkedList = await checkChanges(storedFavGames);
-    const asChange = checkedList.some((game) => game.change === true);
-
-    setFavGames(checkedList);
-    setAsChange(asChange);
-  };
-
-  const addFav = (id, title, price, game) => {
-    const gameInfos = {
-      id: id,
-      title: title,
-      price: price,
-      newPrice: null,
-      change: false,
-      game: game,
-    };
-
-    if (favGames.some((favGames) => favGames.title === title)) {
-      alreadyNotif(title);
-    } else {
-      addNotif(title);
-
-      favGames.push(gameInfos);
-      setFavGames(favGames);
-    }
-  };
-
-  const removeFav = (id, title) => {
-    const removed = favGames.filter((game) => game.id === id);
-    const index = favGames.indexOf(removed[0]);
-    favGames.splice(index, 1);
-
-    setFavGames(favGames);
-    removedNotif(title);
-  };
-
-  const removeNotif = (id) => {
-    const changed = favGames.map((game) => {
-      if (game.id === id && game.newPrice !== null) {
-        return {
-          ...game,
-          change: false,
-          price: game.newPrice,
-          newPrice: null,
-        };
-      } else {
-        return game;
-      }
-    });
-
-    setFavGames(changed);
-    setAsChange(false);
-  };
-
+function App() {
   return (
-    <BrowserRouter>
-      <ReactNotifications />
-      <Navbar asChange={asChange} />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="/search"
-          element={
-            <GameList
-              favGames={favGames}
-              addFav={addFav}
-              removeFav={removeFav}
-            />
-          }
-        />
-        <Route
-          path="/game/:gameID"
-          element={
-            <GameInfo
-              favGames={favGames}
-              addFav={addFav}
-              removeFav={removeFav}
-            />
-          }
-        />
-        <Route
-          path="/deals"
-          element={
-            <Deals favGames={favGames} addFav={addFav} removeFav={removeFav} />
-          }
-        />
-        <Route
-          path="/favorite"
-          element={
-            <FavList
-              favGames={favGames}
-              removeFav={removeFav}
-              removeNotif={removeNotif}
-            />
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Signup />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={configureStore}>
+      <PersistGate persistor={persistor}>
+        <BrowserRouter>
+          <ReactNotifications />
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<GameList />} />
+            <Route path="/game/:gameID" element={<GameInfo />} />
+            <Route path="/deals" element={<Deals />} />
+            <Route path="/favorite" element={<FavList />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Signup />} />
+          </Routes>
+        </BrowserRouter>
+      </PersistGate>
+    </Provider>
   );
-};
+}
 
 export default App;

@@ -1,19 +1,15 @@
 import { Link } from "react-router-dom";
-import { FaBell } from "react-icons/fa";
 
-const Navbar = ({ asChange }) => {
+const Navbar = () => {
   return (
     <header className="bg-white">
       <nav className="main-nav container">
         <Link to="/">Search</Link>
         <Link to="/deals">Bests deals</Link>
-        <div className="nav-alert">
-          <Link to="/favorite">
-            wishlist <FaBell />
-          </Link>
-          {asChange && <div className="red-dot"></div>}
-        </div>
-        <Link to="/login">Log In</Link>
+        <Link to="/favorite">wishlist</Link>
+        <Link className="log-in" to="/login">
+          Log In
+        </Link>
         <Link to="/register">Sign Up</Link>
       </nav>
     </header>

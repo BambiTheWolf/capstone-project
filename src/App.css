@@ -23,11 +23,8 @@
   border-bottom: 1px solid #fff;
 }
 
-.nav-alert {
-  align-self: center;
-  display: flex;
-  flex-direction: row;
-  margin-right: auto;
+.log-in {
+  margin-left: auto !important;
 }
 
 .banner {
