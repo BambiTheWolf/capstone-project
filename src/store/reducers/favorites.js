@@ -4,8 +4,6 @@ export default function favoritesReducer(
   state = initialState.favorites,
   action
 ) {
-  console.log(action, state);
-
   const { type, payload } = action;
 
   switch (type) {
